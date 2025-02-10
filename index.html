@@ -1,0 +1,63 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Chatbot Loader</title>
+    <style>
+        /* Ensure the link has a pointer cursor */
+        a, button {
+            cursor: pointer !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Paste Your Chatbot Script</h1>
+    <p>Paste the script snippet you received from the chatbot:</p>
+
+    <textarea id="scriptInput" rows="6" cols="60" placeholder="Paste your chatbot script here..."></textarea><br>
+    <button onclick="loadChatbot()">Load Chatbot</button>
+    <p>If you do not have a code snippet, you can obtain one from <a href="http://chatbotft.onrender.com" target="_blank">this link</a>.</p>
+
+    <script>
+        function loadChatbot() {
+            const scriptContent = document.getElementById('scriptInput').value.trim();
+
+            if (!scriptContent) {
+                alert("Please paste a valid script!");
+                return;
+            }
+
+            // Create a temporary div to parse the script
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = scriptContent;
+
+            // Remove old chatbot script if exists
+            document.querySelectorAll(".chatbotScript").forEach(script => script.remove());
+
+            // Process each script tag separately
+            tempDiv.querySelectorAll("script").forEach(oldScript => {
+                const newScript = document.createElement("script");
+                newScript.classList.add("chatbotScript");
+
+                if (oldScript.src) {
+                    // Handle external script
+                    newScript.src = oldScript.src;
+                    newScript.defer = true; 
+                    newScript.onload = () => console.log("Chatbot script loaded:", oldScript.src);
+                    newScript.onerror = () => console.error("Failed to load script:", oldScript.src);
+                } else {
+                    // Handle inline script
+                    newScript.textContent = oldScript.textContent;
+                }
+
+                document.body.appendChild(newScript);
+            });
+
+            console.log("Chatbot script injected successfully.");
+        }
+    </script>
+</body>
+</html>
